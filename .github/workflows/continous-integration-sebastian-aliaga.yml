@@ -10,8 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-
     - name: Pruebas de SAST
       run: echo "Ejecución de pruebas de SAST"
 
@@ -23,5 +21,4 @@ jobs:
 
     - name: Build docker image
       run: |
-        timestamp=$(date +%s)
-        docker build -t devops_ws:$timestamp .
+        docker build -t devops_ws . --tag devops_ws_:$(date +%s)
