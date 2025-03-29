@@ -1,0 +1,43 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Analizar el código
+      run: echo "Realizando análisis de SAST"
+
+    - name: Comprobar requisitos
+      id: check_requirements
+      run: |
+        if [ -f allow_pull_request.txt ]; then
+          echo "allow_pull=true" >> $GITHUB_OUTPUT
+        else
+          echo "allow_pull=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Permitir la build si allow_pull es True
+      if: steps.check_requirements.outputs.allow_pull == 'true'
+      run: |
+        echo "Permitiendo Pull Request"
+        cp allow_pull_request.txt allow_pull_request_artifact.txt
+
+    - name: Impedir la build si allow_pull es False
+      if: steps.check_requirements.outputs.allow_pull == 'false'
+      run: |
+        echo "Build fallida. Impidiendo Pull Request"
+        exit 1
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: allow-pull-request-file
+        path: allow_pull_request_artifact.txt
