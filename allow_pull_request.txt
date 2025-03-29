@@ -1,2 +1,0 @@
-This file allows the PR to be merged
-Allowing PR
